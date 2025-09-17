@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 
@@ -22,7 +23,7 @@ import java.util.Map;
         @PostMapping("/depositar")
         public ResponseEntity<Conta> depositar(@RequestBody Map<String, Object> payload) {
             String numeroConta = (String) payload.get("numeroConta");
-            Double valor = (Double) payload.get("valor");
+            BigDecimal valor = (BigDecimal) payload.get("valor");
             try {
                 Conta contaAtualizada = contaService.depositar(numeroConta, valor);
                 return ResponseEntity.ok(contaAtualizada);
@@ -34,7 +35,7 @@ import java.util.Map;
         @PostMapping("/sacar")
         public ResponseEntity<Conta> sacar(@RequestBody Map<String, Object> payload) {
             String numeroConta = (String) payload.get("numeroConta");
-            Double valor = (Double) payload.get("valor");
+            BigDecimal valor = (BigDecimal) payload.get("valor");
             try {
                 Conta contaAtualizada = contaService.sacar(numeroConta, valor);
                 return ResponseEntity.ok(contaAtualizada);
@@ -47,7 +48,7 @@ import java.util.Map;
         public ResponseEntity<Void> transferir(@RequestBody Map<String, Object> payload) {
             String numeroContaOrigem = (String) payload.get("numeroContaOrigem");
             String numeroContaDestino = (String) payload.get("numeroContaDestino");
-            Double valor = (Double) payload.get("valor");
+            BigDecimal valor = (BigDecimal) payload.get("valor");
             try {
                 contaService.transferir(numeroContaOrigem, numeroContaDestino, valor);
                 return ResponseEntity.ok().build();

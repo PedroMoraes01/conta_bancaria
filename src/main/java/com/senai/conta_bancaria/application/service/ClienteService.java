@@ -17,18 +17,21 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     public ClienteDTO criarCliente(ClienteDTO clienteDTO) {
-        Cliente cliente = new Cliente();
-        cliente.setNome(clienteDTO.nome());
-        cliente.setCpf(clienteDTO.cpf());
-        return clienteRepository.save(cliente);
+        Cliente cliente = clienteDTO.toEntity();
+        Cliente clienteSalvo = clienteRepository.save(cliente);
+        return clienteDTO.fromEntity(clienteSalvo);
     }
 
-    public List<Cliente> buscarTodosClientes() {
-        return clienteRepository.findAll();
+    public List<ClienteDTO> buscarTodosClientes() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        return clientes.stream()
+                .map(cliente -> new ClienteDTO(cliente.getNome(), cliente.getCpf()))
+                .toList();
     }
 
-    public Optional<Cliente> buscarClientePorId(String id) {
-        return clienteRepository.findById(id);
+    public Optional<ClienteDTO> buscarClientePorId(String id) {
+        return clienteRepository.findById(id)
+                .map(cliente -> new ClienteDTO(cliente.getNome(), cliente.getCpf()));
     }
 
     public void deletarCliente(String id) {

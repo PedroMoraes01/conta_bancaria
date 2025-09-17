@@ -1,32 +1,43 @@
 package com.senai.conta_bancaria.domain.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@Data
+import java.math.BigDecimal;
+
+
 @Entity
-
+@DiscriminatorValue("CORRENTE")
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@SuperBuilder
 public class ContaCorrente extends Conta {
 
+    @Column(precision = 19, scale = 2)
+    private BigDecimal limite;
 
-    private double limite;
-
-
-    private Double taxa;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal taxa;
 
 
     @Override
-    public void depositar(Double limite) {
+    public void depositar(BigDecimal limite) {
 
     }
 
     @Override
-    public void sacar(Double valor) {
+    public void sacar(BigDecimal valor) {
 
     }
 
     @Override
-    public void transferir(Conta contaDestino, Double valor) {
+    public void transferir(Conta contaDestino, BigDecimal valor) {
 
     }
 }

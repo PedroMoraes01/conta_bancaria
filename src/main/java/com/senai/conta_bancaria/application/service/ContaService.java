@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 
@@ -20,56 +21,30 @@ public class ContaService {
     }
 
     @Transactional
-    public Conta depositar(String contaDestino, Double valor) {
-        if (valor <= 10.00) {
-            throw new IllegalArgumentException("Valor de depósito deve ser maior que R$10,00.");
-        }
-
-        Conta conta = contaRepository.findByNumero(contaDestino)
-                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada."));
-
+   public Conta depositar(String numeroConta, BigDecimal valor) {
+        Conta conta = buscarContaPorNumero(numeroConta)
+                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada: " + numeroConta));
         conta.depositar(valor);
-        conta.setSaldo(conta.getSaldo() + valor);
         return contaRepository.save(conta);
     }
 
     @Transactional
-    public Conta sacar(String numeroConta, Double valor) {
-        if (valor <= 0.0) {
-            throw new IllegalArgumentException("Valor de saque deve ser maior que R$0,00.");
-        }
-
-        Conta conta = contaRepository.findByNumero(numeroConta)
-                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada."));
-
-        if (conta.getSaldo() - valor < 0.0) {
-            throw new IllegalArgumentException("Saldo insuficiente.");
-        }
-
+    public Conta sacar(String numeroConta, BigDecimal valor) {
+        Conta conta = buscarContaPorNumero(numeroConta)
+                .orElseThrow(() -> new IllegalArgumentException("Conta não encontrada: " + numeroConta));
         conta.sacar(valor);
-        conta.setSaldo(conta.getSaldo() - valor);
         return contaRepository.save(conta);
     }
 
     @Transactional
-    public void transferir(String numeroContaOrigem, String numeroContaDestino, Double valor) {
-        if (valor <= 0.0) {
-            throw new IllegalArgumentException("Valor de transferência deve ser maior que R$0,00.");
-        }
+    public void transferir(String numeroContaOrigem, String numeroContaDestino, BigDecimal valor) {
+        Conta contaOrigem = buscarContaPorNumero(numeroContaOrigem)
+                .orElseThrow(() -> new IllegalArgumentException("Conta de origem não encontrada: " + numeroContaOrigem));
+        Conta contaDestino = buscarContaPorNumero(numeroContaDestino)
+                .orElseThrow(() -> new IllegalArgumentException("Conta de destino não encontrada: " + numeroContaDestino));
 
-        Conta contaOrigem = contaRepository.findByNumero(numeroContaOrigem)
-                .orElseThrow(() -> new IllegalArgumentException("Conta de origem não encontrada."));
-
-        Conta contaDestino = contaRepository.findByNumero(numeroContaDestino)
-                .orElseThrow(() -> new IllegalArgumentException("Conta de destino não encontrada."));
-
-        if (contaOrigem.getSaldo() - valor < 0.0) {
-            throw new IllegalArgumentException("Saldo insuficiente na conta de origem.");
-        }
-
-        contaOrigem.transferir(contaDestino, valor);
-        contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
-        contaDestino.setSaldo(contaDestino.getSaldo() + valor);
+        contaOrigem.sacar(valor);
+        contaDestino.depositar(valor);
 
         contaRepository.save(contaOrigem);
         contaRepository.save(contaDestino);
