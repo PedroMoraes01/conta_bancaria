@@ -1,6 +1,7 @@
 package com.senai.conta_bancaria.domain.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 @Entity
 @Data
 @SuperBuilder
+@DiscriminatorValue("POUPANCA")
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ContaPoupanca extends Conta {
