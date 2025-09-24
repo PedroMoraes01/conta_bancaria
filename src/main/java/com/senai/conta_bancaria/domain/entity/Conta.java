@@ -21,7 +21,8 @@ import java.math.BigDecimal;
 )
 @NoArgsConstructor
 @SuperBuilder
-public class Conta {
+public abstract class Conta {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -31,41 +32,19 @@ public class Conta {
     private String numero;
 
 
-    @Column(nullable = false, precision = 4 , scale = 2)
+    @Column(nullable = false, precision = 4, scale = 2)
     private BigDecimal saldo;
 
 
     @Column(nullable = false)
-    private Boolean ativa;
+    private boolean ativa;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", foreignKey = @ForeignKey(name = "fk_conta_cliente"))
     private Cliente cliente;
 
-    public void depositar(BigDecimal valor) {
-        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("O valor do depósito deve ser maior que zero.");
-        }
-        this.saldo = this.saldo.add(valor);
-    }
 
-    public void sacar(BigDecimal valor) {
-        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("O valor do saque deve ser maior que zero.");
-        }
-        if (this.saldo.compareTo(valor) < 0) {
-            throw new IllegalArgumentException("Saldo insuficiente para saque.");
-        }
-        this.saldo = this.saldo.subtract(valor);
-    }
-
-    public void transferir(Conta contaDestino, BigDecimal valor) {
-        if (contaDestino == null) {
-            throw new IllegalArgumentException("Conta de destino inválida.");
-        }
-        this.sacar(valor);
-        contaDestino.depositar(valor);
-    }
+    public abstract String getTipo();
 
 }

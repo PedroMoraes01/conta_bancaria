@@ -20,41 +20,6 @@ import java.util.Map;
         @Autowired
         private ContaService contaService;
 
-        @PostMapping("/depositar")
-        public ResponseEntity<Conta> depositar(@RequestBody Map<String, Object> payload) {
-            String numeroConta = (String) payload.get("numeroConta");
-            BigDecimal valor = (BigDecimal) payload.get("valor");
-            try {
-                Conta contaAtualizada = contaService.depositar(numeroConta, valor);
-                return ResponseEntity.ok(contaAtualizada);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.badRequest().body(null);
-            }
-        }
 
-        @PostMapping("/sacar")
-        public ResponseEntity<Conta> sacar(@RequestBody Map<String, Object> payload) {
-            String numeroConta = (String) payload.get("numeroConta");
-            BigDecimal valor = (BigDecimal) payload.get("valor");
-            try {
-                Conta contaAtualizada = contaService.sacar(numeroConta, valor);
-                return ResponseEntity.ok(contaAtualizada);
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.badRequest().body(null);
-            }
-        }
-
-        @PostMapping("/transferir")
-        public ResponseEntity<Void> transferir(@RequestBody Map<String, Object> payload) {
-            String numeroContaOrigem = (String) payload.get("numeroContaOrigem");
-            String numeroContaDestino = (String) payload.get("numeroContaDestino");
-            BigDecimal valor = (BigDecimal) payload.get("valor");
-            try {
-                contaService.transferir(numeroContaOrigem, numeroContaDestino, valor);
-                return ResponseEntity.ok().build();
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.badRequest().build();
-            }
-        }
     }
 

@@ -22,22 +22,12 @@ public class ContaCorrente extends Conta {
     @Column(precision = 19, scale = 2)
     private BigDecimal limite;
 
-    @Column(precision = 19, scale = 2)
+    @Column(precision = 19, scale = 4)
     private BigDecimal taxa;
 
 
     @Override
-    public void depositar(BigDecimal limite) {
-
-    }
-
-    @Override
-    public void sacar(BigDecimal valor) {
-
-    }
-
-    @Override
-    public void transferir(Conta contaDestino, BigDecimal valor) {
-
+    public String getTipo() {
+        return "CONTA_CORRENTE";
     }
 }

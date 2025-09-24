@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,15 @@ public class ClienteController {
     private final ClienteService service;
 
     @PostMapping
-    public ClienteResponseDTO registrarCliente(@RequestBody ClienteDTO dto) {
-        return service.registrarClienteOuAnexarConta(dto);
+    public ResponseEntity<ClienteResponseDTO> registrarCliente(@RequestBody ClienteDTO dto) {
+        ClienteResponseDTO novoCliente = service.registrarClienteOuAnexarConta(dto);
+
+        return ResponseEntity.created(
+                URI.create("api/clientes/cpf"+ novoCliente.cpf())
+        ).body(novoCliente);
+    }
+    @GetMapping
+    public ResponseEntity<List<ClienteResponseDTO>> listarClientesAtivos (){
+        return ResponseEntity.ok(service.listarClientesAtivos());
     }
 }

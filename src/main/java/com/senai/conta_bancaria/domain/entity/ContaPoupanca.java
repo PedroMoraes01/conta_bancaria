@@ -19,20 +19,11 @@ import java.math.BigDecimal;
 public class ContaPoupanca extends Conta {
 
     @Column(precision = 10, scale = 4)
-    private double rendimento;
+    private BigDecimal rendimento;
+
 
     @Override
-    public void depositar(BigDecimal valor) {
-
-    }
-
-    @Override
-    public void sacar(BigDecimal valor) {
-
-    }
-
-    @Override
-    public void transferir(Conta contaDestino, BigDecimal valor) {
-
+    public String getTipo() {
+        return "CONTA_POUPANCA";
     }
 }

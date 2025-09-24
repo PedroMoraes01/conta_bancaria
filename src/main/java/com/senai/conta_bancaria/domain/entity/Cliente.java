@@ -35,7 +35,7 @@ public class Cliente {
 
     @NotBlank(message = "CPF é obrigatorio!! ")
     @Column(nullable = false, length = 11)
-    private Long cpf;
+    private String cpf;
 
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
