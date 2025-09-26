@@ -4,13 +4,11 @@ import com.senai.conta_bancaria.application.dto.ClienteDTO;
 import com.senai.conta_bancaria.application.dto.ClienteResponseDTO;
 import com.senai.conta_bancaria.application.service.ClienteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/clientes")
@@ -24,11 +22,31 @@ public class ClienteController {
         ClienteResponseDTO novoCliente = service.registrarClienteOuAnexarConta(dto);
 
         return ResponseEntity.created(
-                URI.create("api/clientes/cpf"+ novoCliente.cpf())
+                URI.create("api/clientes/cpf" + novoCliente.cpf())
         ).body(novoCliente);
     }
+
     @GetMapping
-    public ResponseEntity<List<ClienteResponseDTO>> listarClientesAtivos (){
+    public ResponseEntity<List<ClienteResponseDTO>> listarClientesAtivos() {
         return ResponseEntity.ok(service.listarClientesAtivos());
     }
+
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<ClienteResponseDTO> buscarClienteAtivoPorCpf(@PathVariable String cpf) {
+        return ResponseEntity.ok(service.buscarClienteAtivoPorCpf(cpf));
+    }
+    @PutMapping("/{cpf}")
+    public ResponseEntity<ClienteResponseDTO> atualiazarCliente (@PathVariable String cpf,
+                                                               @RequestBody ClienteDTO dto){
+        return ResponseEntity.ok(service.atualiazarCliente(cpf,dto));
+    }
+
+    @DeleteMapping("/cpf/{cpf}")
+    public ResponseEntity<Void> deletarCliente(@PathVariable String cpf){
+        service.deletarCliente(cpf);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
 }

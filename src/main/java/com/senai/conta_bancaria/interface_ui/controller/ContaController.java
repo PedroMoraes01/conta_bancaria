@@ -1,25 +1,29 @@
 package com.senai.conta_bancaria.interface_ui.controller;
 
+import com.senai.conta_bancaria.application.dto.ContaResumoDTO;
 import com.senai.conta_bancaria.application.service.ContaService;
-import com.senai.conta_bancaria.domain.entity.Conta;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.util.Map;
+import java.util.List;
 
+@RestController
+@RequestMapping("/api/conta")
+@RequiredArgsConstructor
+public class ContaController {
+    private final ContaService service;
 
-    @RestController
-    @RequestMapping("/api/contas")
-    public class ContaController {
-
-        @Autowired
-        private ContaService contaService;
-
-
+    @GetMapping
+    public ResponseEntity<List<ContaResumoDTO>> listarTodasContas() {
+        return ResponseEntity.ok(service.listarTodasContas());
     }
 
+    @GetMapping("/{numeroDaConta}")
+    public ResponseEntity<ContaResumoDTO> buscarContaPorNumero(@PathVariable String numeroDaConta) {
+        return ResponseEntity.ok(service.buscarContaPorNumero(numeroDaConta));
+    }
+}

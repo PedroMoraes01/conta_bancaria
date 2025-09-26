@@ -32,15 +32,40 @@ public class ClienteService {
         cliente.getContas().add(novaConta);
 
 
-
-
-
         return ClienteResponseDTO.fromEntity(clienteRepository.save(cliente));
     }
 
     public List<ClienteResponseDTO> listarClientesAtivos() {
-        return clienteRepository.findAllByAtivotrue().stream()
+        return clienteRepository.findAllByAtivoTrue().stream()
                 .map(ClienteResponseDTO::fromEntity)
                 .toList();
+    }
+
+    public ClienteResponseDTO buscarClienteAtivoPorCpf(String cpf) {
+        var cliente = clienteRepository.findByCpfAndAtivoTrue(cpf).orElseThrow(
+                () -> new RuntimeException("Cliente não encontrado.")
+        );
+        return ClienteResponseDTO.fromEntity(cliente);
+    }
+
+    public ClienteResponseDTO atualiazarCliente(String cpf, ClienteDTO dto) {
+        var cliente = clienteRepository.findByCpfAndAtivoTrue(cpf).orElseThrow(
+                () -> new RuntimeException("Cliente não encontrado.")
+        );
+        cliente.setNome(dto.nome());
+        cliente.setCpf(dto.cpf());
+
+        return ClienteResponseDTO.fromEntity(clienteRepository.save(cliente));
+    }
+
+    public void deletarCliente(String cpf) {
+        var cliente = clienteRepository.findByCpfAndAtivoTrue(cpf).orElseThrow(
+                () -> new RuntimeException("Cliente não encontrado.")
+        );
+        cliente.setAtivo(false);
+        cliente.getContas().forEach(
+                conta -> conta.setAtiva(false)
+        );
+        clienteRepository.save(cliente);
     }
 }
