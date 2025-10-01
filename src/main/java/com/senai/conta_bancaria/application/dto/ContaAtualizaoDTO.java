@@ -2,16 +2,13 @@ package com.senai.conta_bancaria.application.dto;
 
 import java.math.BigDecimal;
 
-public record ContaAtualizaoDTO() {
+public record ContaAtualizaoDTO(
+        BigDecimal saldo,
 
-    public static final BigDecimal taxa = ;
+        BigDecimal limite,
 
-    public BigDecimal saldo() {
-    }
+        BigDecimal taxa,
 
-    public BigDecimal rendimento() {
-    }
-
-    public BigDecimal limite() {
-    }
+        BigDecimal rendimento
+) {
 }
