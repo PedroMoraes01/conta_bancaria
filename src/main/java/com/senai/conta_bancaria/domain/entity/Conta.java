@@ -1,5 +1,7 @@
 package com.senai.conta_bancaria.domain.entity;
 
+import com.senai.conta_bancaria.domain.exceptions.TransferenciaParaMesmaContaException;
+import com.senai.conta_bancaria.domain.exceptions.ValoresNegativoException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,9 +50,7 @@ public abstract class Conta {
     public abstract String getTipo();
 
     public void sacar(BigDecimal valor) {
-        if (valor.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("O valor de saque deve ser maior que zero.");
-        }
+        validarValorMaiorQueZero(valor,"saque");
         if (this.saldo.compareTo(valor) < 0) {
             throw new IllegalArgumentException("Saldo insuficiente para o saque.");
         }
@@ -58,24 +58,22 @@ public abstract class Conta {
     }
 
     public void depositar(BigDecimal valor) {
-        if (valor.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("O valor de depósito deve ser maior que zero.");
-        }
+        validarValorMaiorQueZero(valor,"depósito");
         this.saldo = this.saldo.add(valor);
 
     }
-    protected static void validarValorMaiorQueZero(BigDecimal valor) {
-        if (valor.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("O valor da operação deve ser maior que zero.");
-        }
-    }
+
     public void transferir(BigDecimal valor, Conta contaDestino) {
-        if (this.id.equals(contaDestino.getId())){
-            throw new IllegalArgumentException("Não é possível transferir para a mesma conta.");
+        if (this.id.equals(contaDestino.getId())) {
+            throw new TransferenciaParaMesmaContaException();
         }
-
-
         this.sacar(valor);
         contaDestino.depositar(valor);
+    }
+
+    protected static void validarValorMaiorQueZero (BigDecimal valor, String operacao){
+        if (valor.compareTo(BigDecimal.ZERO) < 0) {
+            throw new ValoresNegativoException(operacao);
+        }
     }
 }

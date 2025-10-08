@@ -7,6 +7,7 @@ import com.senai.conta_bancaria.application.dto.ValorSaqueDepositoDTO;
 import com.senai.conta_bancaria.domain.entity.Conta;
 import com.senai.conta_bancaria.domain.entity.ContaCorrente;
 import com.senai.conta_bancaria.domain.entity.ContaPoupanca;
+import com.senai.conta_bancaria.domain.exceptions.EntidadeNaoEncontradaException;
 import com.senai.conta_bancaria.domain.repository.ContaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class ContaService {
     public ContaResumoDTO buscarContaPorNumero(String numeroDaConta) {
         return ContaResumoDTO.fromEntity(
                 repository.findByNumeroAndAtivaTrue(numeroDaConta)
-                        .orElseThrow(() -> new RuntimeException("Conta não encontrada"))
+                        .orElseThrow(() -> new EntidadeNaoEncontradaException("Conta"))
         );
     }
     public ContaResumoDTO atualizarConta(String numeroConta, ContaAtualizaoDTO dto) {
@@ -51,7 +52,7 @@ public class ContaService {
 
     private Conta buscaContaAtivaPorNumero(String numeroConta) {
         var conta = repository.findByNumeroAndAtivaTrue(numeroConta).orElseThrow(
-                () -> new RuntimeException("Conta não encontrada.")
+                () -> new EntidadeNaoEncontradaException("Conta")
         );
         return conta;
     }
