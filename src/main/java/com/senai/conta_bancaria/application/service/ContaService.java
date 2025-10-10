@@ -63,10 +63,10 @@ public class ContaService {
         repository.save(conta);
     }
 
-    public ContaResumoDTO sacar(String numeroDaConta, BigDecimal valor) {
+    public ContaResumoDTO sacar(String numeroDaConta, ValorSaqueDepositoDTO dto) {
         var conta = buscaContaAtivaPorNumero(numeroDaConta);
-        conta.sacar(valor);
-        conta.setSaldo(conta.getSaldo().subtract(valor));
+        conta.sacar(dto.valor());
+        conta.setSaldo(conta.getSaldo().subtract(dto.valor()));
         return ContaResumoDTO.fromEntity(repository.save(conta));
     }
 
