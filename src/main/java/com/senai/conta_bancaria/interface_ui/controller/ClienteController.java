@@ -36,9 +36,9 @@ public class ClienteController {
         return ResponseEntity.ok(service.buscarClienteAtivoPorCpf(cpf));
     }
     @PutMapping("/{cpf}")
-    public ResponseEntity<ClienteResponseDTO> atualiazarCliente (@PathVariable String cpf,
+    public ResponseEntity<ClienteResponseDTO> atualizarCliente(@PathVariable String cpf,
                                                                @RequestBody ClienteDTO dto){
-        return ResponseEntity.ok(service.atualiazarCliente(cpf,dto));
+        return ResponseEntity.ok(service.atualizarCliente(cpf,dto));
     }
 
     @DeleteMapping("/cpf/{cpf}")

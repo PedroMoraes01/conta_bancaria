@@ -2,7 +2,9 @@ package com.senai.conta_bancaria.application.dto;
 
 import com.senai.conta_bancaria.domain.entity.Gerente;
 import com.senai.conta_bancaria.domain.enums.Role;
+import lombok.Builder;
 
+@Builder
 public record GerenteDTO(
         String id,
         String nome,
@@ -31,7 +33,7 @@ public record GerenteDTO(
                 .email(this.email)
                 .senha(this.senha)
                 .ativo(this.ativo != null ? this.ativo : true)
-                .role(this.role != null ? this.role : Role.GERENTE)
+                .role(this.role != null ? this.role : Role.ADMIN)
                 .build();
     }
 }
