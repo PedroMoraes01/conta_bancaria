@@ -28,6 +28,8 @@ public class GlobalExceptionHandler {
         problem.setTitle(title);
         problem.setDetail(detail);
         problem.setInstance(URI.create(path));
+        // Use a classe ProblemDetailUtils se preferir
+        // return ProblemDetailUtils.buildProblem(status, title, detail, path);
         return problem;
     }
 
@@ -47,6 +49,55 @@ public class GlobalExceptionHandler {
         problem.setProperty("errors", errors);
         return problem;
     }
+
+    // --- Exceções de Domínio (NOVAS) ---
+
+    @ExceptionHandler(EntidadeNaoEncontradaException.class)
+    public ProblemDetail handleEntidadeNaoEncontrada(EntidadeNaoEncontradaException ex, HttpServletRequest request) {
+        return buildProblem(
+                HttpStatus.NOT_FOUND,
+                "Não encontrado",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(ContaMesmoTipoException.class)
+    public ProblemDetail handleContaMesmoTipo(ContaMesmoTipoException ex, HttpServletRequest request) {
+        return buildProblem(
+                HttpStatus.CONFLICT, // 409 Conflict
+                "Conflito",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler({
+            TipoDeContaInvalidaException.class,
+            ValoresNegativoException.class,
+            TransferenciaParaMesmaContaException.class
+    })
+    public ProblemDetail handleOperacaoInvalida(RuntimeException ex, HttpServletRequest request) {
+        return buildProblem(
+                HttpStatus.BAD_REQUEST, // 400 Bad Request
+                "Operação inválida",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(SaldoInsuficienteException.class)
+    public ProblemDetail handleSaldoInsuficiente(SaldoInsuficienteException ex, HttpServletRequest request) {
+        return buildProblem(
+                HttpStatus.UNPROCESSABLE_ENTITY, // 422 Unprocessable Entity
+                "Saldo insuficiente",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+
+    // --- Exceções de Segurança ---
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail constraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
@@ -97,6 +148,7 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
     }
+
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ProblemDetail handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         return buildProblem(
