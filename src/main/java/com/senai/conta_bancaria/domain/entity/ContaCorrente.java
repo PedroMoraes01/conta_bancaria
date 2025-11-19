@@ -24,7 +24,7 @@ public class ContaCorrente extends Conta {
     private BigDecimal limite = new  BigDecimal ("300.00");
 
     @Column(precision = 19, scale = 4)
-    private BigDecimal taxa;
+    private BigDecimal taxa = BigDecimal.ZERO;
 
 
     @Override
