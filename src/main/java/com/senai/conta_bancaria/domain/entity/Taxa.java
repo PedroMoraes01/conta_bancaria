@@ -21,4 +21,8 @@ public class Taxa {
     private BigDecimal percentual;
     @Column(precision = 19, scale = 2)
     private BigDecimal valorFixo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoTaxa tipo
 }
