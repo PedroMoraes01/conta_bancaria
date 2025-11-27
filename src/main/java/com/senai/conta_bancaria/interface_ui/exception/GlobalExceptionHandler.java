@@ -180,4 +180,13 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
     }
+    @ExceptionHandler(AutenticacaoIoTExpiradaException.class)
+    public ProblemDetail handleIoTExpirada(AutenticacaoIoTExpiradaException ex, HttpServletRequest request) {
+        return buildProblem(
+                HttpStatus.FORBIDDEN, // 403 Forbidden
+                "Autenticação Biométrica Necessária",
+                ex.getMessage(), // Vai mostrar: "Autenticação biométrica IoT não encontrada..."
+                request.getRequestURI()
+        );
+    }
 }

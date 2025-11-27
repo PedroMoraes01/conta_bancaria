@@ -1,5 +1,13 @@
 package com.senai.conta_bancaria.application.dto;
 
+import com.senai.conta_bancaria.domain.entity.Taxa;
+import com.senai.conta_bancaria.domain.enums.TipoTaxa;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
+
 public record TaxaDTO(
 
         @NotBlank
