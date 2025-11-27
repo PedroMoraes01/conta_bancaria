@@ -1,48 +1,39 @@
 package com.senai.conta_bancaria.application.service;
 
+import com.senai.conta_bancaria.application.dto.PagamentoDTO;
+import com.senai.conta_bancaria.application.dto.PagamentoResponseDTO;
+import com.senai.conta_bancaria.domain.entity.Conta;
+import com.senai.conta_bancaria.domain.entity.Pagamento;
 import com.senai.conta_bancaria.domain.entity.Taxa;
+import com.senai.conta_bancaria.domain.enums.TipoTaxa;
+import com.senai.conta_bancaria.domain.exceptions.EntidadeNaoEncontradaException;
+import com.senai.conta_bancaria.domain.repository.ContaRepository;
+import com.senai.conta_bancaria.domain.repository.PagamentoRepository;
+import com.senai.conta_bancaria.domain.repository.TaxaRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PagamentoService {
-    private final PagamentoRepository pagamentoRepository;
-    private final ContaRepository contaRepository;
-    private final TaxaRepository taxaRepository;
-    private final PagamentoService domainService;
-    private final IoTService ioTService;
+    public BigDecimal calcularTotal(BigDecimal valorOriginal, List<Taxa> taxas) {
+        BigDecimal total = valorOriginal;
 
-    @Transactional
-    public PagamentoResponseDTO realizarPagamento(PagamentoDTO dto) {
-        Conta conta = contaRepository.findByNumeroAndAtivaTrue(dto.numeroConta())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Conta"));
+        for (Taxa taxa : taxas) {
+            if (taxa.getValorFixo() != null) {
+                total = total.add(taxa.getValorFixo());
+            }
+            if (taxa.getPercentual() != null) {
+                BigDecimal valorTaxa = valorOriginal.multiply(taxa.getPercentual());
+                total = total.add(valorTaxa);
+            }
+        }
 
-        // 1. Validação IoT
-        ioTService.validarCodigoBiometrico(conta.getCliente().getId());
-
-        // 2. Cálculo e Débito (CORREÇÃO AQUI)
-        // Buscamos APENAS taxas configuradas para "PAGAMENTO"
-        List<Taxa> taxas = taxaRepository.findByTipo(TipoTaxa.PAGAMENTO);
-
-        var valorTotal = domainService.calcularTotal(dto.valorBoleto(), taxas);
-
-        conta.sacar(valorTotal);
-        // contaRepository.save(conta); -> Desnecessário se estiver em transação e a entidade for gerenciada, mas mal não faz.
-
-        // 3. Persistência
-        Pagamento pag = Pagamento.builder()
-                .conta(conta)
-                .boleto(dto.codigoBoleto())
-                .valorPago(valorTotal)
-                .dataPagamento(LocalDateTime.now())
-                .status("SUCESSO")
-                .taxas(taxas)
-                .build();
-
-        pagamentoRepository.save(pag);
-        return PagamentoResponseDTO.fromEntity(pag);
+        return total;
     }
+
 }
