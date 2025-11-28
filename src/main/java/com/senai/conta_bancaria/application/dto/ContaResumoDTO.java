@@ -31,6 +31,8 @@ public record ContaResumoDTO(
                     .saldo(this.saldo != null ? this.saldo : BigDecimal.ZERO)
                     .cliente(cliente)
                     .ativa(true)
+                    .taxa(BigDecimal.ZERO)
+                    .limite(new BigDecimal("300.00"))
                     .build();
         } else if ("POUPANCA".equalsIgnoreCase(this.tipo)) {
             return ContaPoupanca.builder()

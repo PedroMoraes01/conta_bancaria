@@ -5,6 +5,7 @@ import com.senai.conta_bancaria.application.dto.PagamentoResponseDTO;
 import com.senai.conta_bancaria.application.service.PagamentoAppService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ public class PagamentoController {
 
     @PostMapping
     @Operation(summary = "Efetuar Pagamento", description = "Realiza o débito se houver autenticação IoT válida recente.")
-    public ResponseEntity<PagamentoResponseDTO> pagar(@RequestBody PagamentoDTO dto) {
+    public ResponseEntity<PagamentoResponseDTO> pagar(@RequestBody @Valid PagamentoDTO dto) {
         return ResponseEntity.ok(service.realizarPagamento(dto));
     }
 }

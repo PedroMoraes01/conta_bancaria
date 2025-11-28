@@ -20,7 +20,6 @@ public class IoTService {
     private final CodigoAutenticacaoRepository codigoRepository;
     private final ClienteRepository clienteRepository;
 
-    // Chamado pelo PagamentoAppService antes de confirmar o pagamento
     public void validarCodigoBiometrico(String clienteId) {
         CodigoAutenticacao auth = codigoRepository.findTopByClienteIdAndValidadoFalseOrderByExpiraEmDesc(clienteId)
                 .orElseThrow(AutenticacaoIoTExpiradaException::new);
@@ -33,7 +32,6 @@ public class IoTService {
         codigoRepository.save(auth);
     }
 
-    // Chamado pelo MqttController quando chega mensagem do dispositivo
     @Transactional
     public void processarCodigoRecebido(ValidacaoAuthDTO dto) {
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
@@ -43,7 +41,7 @@ public class IoTService {
                 .cliente(cliente)
                 .codigo(dto.getCodigoGerado())
                 .validado(false)
-                .expiraEm(LocalDateTime.now().plusMinutes(2)) // Validade de 2 min
+                .expiraEm(LocalDateTime.now().plusMinutes(2))
                 .build();
 
         codigoRepository.save(codigo);

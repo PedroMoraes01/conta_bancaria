@@ -7,6 +7,7 @@ import com.senai.conta_bancaria.domain.entity.Pagamento;
 import com.senai.conta_bancaria.domain.entity.Taxa;
 import com.senai.conta_bancaria.domain.enums.TipoTaxa;
 import com.senai.conta_bancaria.domain.exceptions.EntidadeNaoEncontradaException;
+import com.senai.conta_bancaria.domain.exceptions.ValidacaoException;
 import com.senai.conta_bancaria.domain.repository.ContaRepository;
 import com.senai.conta_bancaria.domain.repository.PagamentoRepository;
 import com.senai.conta_bancaria.domain.repository.TaxaRepository;
@@ -21,6 +22,10 @@ import java.util.List;
 @Service
 public class PagamentoService {
     public BigDecimal calcularTotal(BigDecimal valorOriginal, List<Taxa> taxas) {
+        if (valorOriginal == null) {
+            throw new ValidacaoException("O valor do boleto é obrigatório e deve ser numérico.");
+        }
+
         BigDecimal total = valorOriginal;
 
         for (Taxa taxa : taxas) {
