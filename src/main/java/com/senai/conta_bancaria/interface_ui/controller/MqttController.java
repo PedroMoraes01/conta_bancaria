@@ -25,7 +25,7 @@ public class MqttController {
     private final ClienteRepository clienteRepository;
 
    /* @PostMapping("/solicitar/{cpf}")
-    @MqttPublisher("banco/autenticacao") // Tópico fixo configurado na anotação da lib customizada
+    @MqttPublisher("banco/autenticacao")
     @Operation(summary = "Solicitar autenticação biométrica", description = "Envia comando MQTT para o dispositivo do cliente solicitar a digital.")
     public SolicitacaoAuthDTO solicitarAutenticacao(@PathVariable String cpf) {
         Cliente cliente = clienteRepository.findByCpfAndAtivoTrue(cpf)
