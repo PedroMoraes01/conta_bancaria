@@ -1,6 +1,5 @@
 package com.senai.conta_bancaria.domain.entity;
 
-import com.senai.conta_bancaria.domain.enums.TipoTaxa;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,5 +24,5 @@ public class Taxa {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TipoTaxa tipo;
+    private TipoTaxa tipo
 }
