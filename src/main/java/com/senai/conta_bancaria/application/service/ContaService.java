@@ -25,6 +25,7 @@ import java.util.Optional;
 @Transactional
 public class ContaService {
     private final ContaRepository repository;
+    private final IoTService ioTService; // Injeção Obrigatória para validação
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     public List<ContaResumoDTO> listarTodasContas() {
@@ -48,7 +49,7 @@ public class ContaService {
 
         if (conta instanceof ContaPoupanca poupanca){
             poupanca.setRendimento(dto.rendimento());
-        }else if (conta instanceof ContaCorrente corrente){
+        } else if (conta instanceof ContaCorrente corrente){
             corrente.setLimite(dto.limite());
             corrente.setTaxa(dto.taxa());
         }
@@ -71,8 +72,16 @@ public class ContaService {
     @PreAuthorize("hasAnyRole('CLIENTE')")
     public ContaResumoDTO sacar(String numeroDaConta, ValorSaqueDepositoDTO dto) {
         var conta = buscaContaAtivaPorNumero(numeroDaConta);
+
+        // --- MUDANÇA: Validação IoT Obrigatória para Saque ---
+        // Verifica se houve autenticação biométrica recente antes de debitar
+        ioTService.validarCodigoBiometrico(conta.getCliente().getId());
+        // -----------------------------------------------------
+
         conta.sacar(dto.valor());
-        conta.setSaldo(conta.getSaldo().subtract(dto.valor()));
+        // Nota: conta.sacar já atualiza o saldo na entidade, mas setSaldo pode ser redundante ou seguro dependendo da implementação da Entity
+        conta.setSaldo(conta.getSaldo());
+
         return ContaResumoDTO.fromEntity(repository.save(conta));
     }
 
@@ -88,9 +97,12 @@ public class ContaService {
         var contaOrigem = buscaContaAtivaPorNumero(numeroDaConta);
         var contaDestino = buscaContaAtivaPorNumero(dto.contaDestino());
 
-        contaOrigem.sacar(dto.valor());
-        contaDestino.depositar(dto.valor());
+        // --- MUDANÇA: Validação IoT Obrigatória para Transferência ---
+        // Apenas quem envia o dinheiro precisa validar a digital
+        ioTService.validarCodigoBiometrico(contaOrigem.getCliente().getId());
+        // -------------------------------------------------------------
 
+        // Utiliza o método de domínio 'transferir' que já engloba sacar e depositar
         contaOrigem.transferir(dto.valor(), contaDestino);
 
         repository.save(contaDestino);
@@ -104,7 +116,6 @@ public class ContaService {
             poupanca.aplicarRendimento();
             return ContaResumoDTO.fromEntity(repository.save(poupanca));
         } else throw new EntidadeNaoEncontradaException("Conta Poupança");
-
     }
 }
 

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// Recebido do tópico banco/validacao
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
